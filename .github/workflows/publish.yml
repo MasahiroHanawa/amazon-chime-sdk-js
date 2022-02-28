@@ -95,7 +95,10 @@ jobs:
       - name: Verify demo browser npm version and run deployment script
         run: |
           demo_current_version=$(.github/script/get-demo-browser-current-version)
+          demo_current_version=$(echo $demo_current_version | tr -d '^~*')
           echo "Current demo version:" $demo_current_version
+
+          echo "Current released npm version:" ${{ steps.npm_version.outputs.npm_version }}
           if [[ *$demo_current_version* != "^#${{ steps.npm_version.outputs.npm_version }}" ]];
           then
             echo "Demo npm version is not the same as the current released version"
@@ -103,5 +106,23 @@ jobs:
           else
             npm run build --app=meetingReadinessChecker
             script/github-action-awscli-installation
-            script/deploy-canary-demo
+            
+            npm_latest_version=$(npm view amazon-chime-sdk-js@latest version)
+            echo "npm_latest_version:" $npm_latest_version
+            npm_beta_version=$(npm view amazon-chime-sdk-js@beta version)
+            echo "npm_beta_version:" $npm_beta_version
+
+            if [[ $npm_beta_version == $npm_latest_version || -z $npm_beta_version ]] ; then
+              echo "Currently, there is no beta version or the beta and latest version are same. So, the demo will be deployed on the latest CloudFormation stack."
+              script/deploy-canary-demo
+            elif [[ $demo_current_version == $npm_latest_version ]] ; then
+              echo "Deploying previous major version canary demo"
+              script/deploy-canary-demo prev
+            elif [[ $demo_current_version == $npm_beta_version ]] ; then
+              echo "Deploying latest / beta version canary demo"
+              script/deploy-canary-demo
+            else
+              echo "Current version deployment does not match a deployed npm version"
+              exit 1
+            fi
           fi
