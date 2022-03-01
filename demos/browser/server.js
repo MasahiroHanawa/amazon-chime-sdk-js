@@ -25,7 +25,7 @@ const endpoint = process.env.ENDPOINT || 'https://service.chime.aws.amazon.com';
 const currentRegion = process.env.REGION || 'us-east-1';
 const useChimeSDKMeetings = process.env.USE_CHIME_SDK_MEETINGS || 'true';
 
-process.env.CAPTURE_S3_DESTINATION = 'arn:aws:s3:::test-chime-hanawa/recordings/';
+process.env.CAPTURE_S3_DESTINATION = 'arn:aws:s3:::test-chime/recordings/';
 
 // Create ans AWS SDK Chime object. Region 'us-east-1' is globally available..
 // Use the MediaRegion property below in CreateMeeting to select the region
