@@ -42,6 +42,7 @@ module.exports = env => {
         '/join': 'http://127.0.0.1:8081',
         '/end': 'http://127.0.0.1:8081',
         '/fetch_credentials': 'http://127.0.0.1:8081',
+        '/startCapture': 'http://127.0.0.1:8081',
       }
     },
     plugins: [
